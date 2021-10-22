@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.Mensaje;
 import com.example.demo.entity.UsuarioTestLogin;
 import com.example.demo.repository.IUsuarioTestLoginRepo;
 
@@ -26,13 +27,13 @@ public class UsuarioTestLoginController {
 	
 	
 	@PostMapping("/v1/login")
-	public ResponseEntity<String> login(@RequestBody UsuarioTestLogin usr){
+	public ResponseEntity<Mensaje> login(@RequestBody UsuarioTestLogin usr){
 		Optional<UsuarioTestLogin> usuario = usrRepo.findByUsuarioAndPassword(usr.getUsuario(),usr.getPassword());
 		
 		if(usuario.isPresent()) {
-			return ResponseEntity.status(HttpStatus.OK).body("Usuario Autenticado");
+			return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Usuario Autenticado"));
 		}else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario o contraseña incorrectos");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Mensaje("Usuario o contraseña incorrectos"));
 		}
 	}
 	
