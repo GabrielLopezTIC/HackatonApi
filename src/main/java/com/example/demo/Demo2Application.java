@@ -23,6 +23,10 @@ public class Demo2Application implements CommandLineRunner {
 		System.out.println(repo.count());
 		if(repo.count() == 0) {
 			repo.save(new UsuarioTestLogin(1,"Rodrigo","qwert")); 
+			repo.save(new UsuarioTestLogin(1,"Gabriel","Gabriel"));
+			repo.save(new UsuarioTestLogin(1,"Felipe","Felipe"));
+			repo.save(new UsuarioTestLogin(1,"Rodrigo","Rodrigo"));
+			repo.save(new UsuarioTestLogin(1,"Jesus","Jesus")); 
 		}
 	}
 
