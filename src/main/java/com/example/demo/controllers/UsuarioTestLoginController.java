@@ -39,6 +39,14 @@ public class UsuarioTestLoginController {
 		}
 	}
 	
+	@GetMapping("/v1/usuario/{usr}")
+	public ResponseEntity<?> getUsuario(@PathVariable("usr") String usr){
+		Optional<UsuarioTestLogin> usuario = usrRepo.findByUsuario(usr);
+		if(!usuario.isPresent())
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe el usuario"));
+		return ResponseEntity.status(HttpStatus.OK).body(usuario.get());
+	}
+	
 	@GetMapping("/v1/all")
 	public ResponseEntity<List<UsuarioTestLogin>> getAll(){
 		//usrRepo.
