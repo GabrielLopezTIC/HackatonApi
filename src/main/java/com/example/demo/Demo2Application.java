@@ -30,7 +30,7 @@ public class Demo2Application implements CommandLineRunner {
 			tarjetas.add(new Tarjeta(1,"Premium",100, "1111-2222-3333-4567","4567" ,"22/10/21", "Visa"));
 			tarjetas.add(new Tarjeta(1,"Basica",100,"1111-2222-3333-8967","4567","22/10/21", "MasterCard"));
 			tarjetas.add(new Tarjeta(1,"Platinum",100,"1111-2222-3333-2341","4567","22/10/21", "Visa"));
-			repo.save(new UsuarioTestLogin(1,"Rodrigo","qwert","2222",tarjetas)); 
+			//repo.save(new UsuarioTestLogin(1,"Rodrigo","qwert","2222",tarjetas)); 
 			repo.save(new UsuarioTestLogin(1,"Gabriel","Gabriel","3333",tarjetas));
 			repo.save(new UsuarioTestLogin(1,"Felipe","Felipe","4444",tarjetas));
 			repo.save(new UsuarioTestLogin(1,"Rodrigo","Rodrigo","5555",tarjetas));

@@ -48,25 +48,25 @@ public class UsuarioTestLoginController {
 	}
 	
 	@GetMapping("/v1/all")
-	public ResponseEntity<List<UsuarioTestLogin>> getAll(){
+	public ResponseEntity<Iterable<UsuarioTestLogin>> getAll(){
 		//usrRepo.
 		return ResponseEntity.status(HttpStatus.OK).body(usrRepo.findAll());
 	}
 	
-//	@PostMapping("/v1/tarjeta/user/{user}")
-//	public ResponseEntity<Mensaje> addTarjeta(@PathVariable("user") String user, @RequestBody Tarjeta tarj){
-//		System.out.println("El usuario es : "+user);
-//		Optional<UsuarioTestLogin> usr = usrRepo.findByUsuario(user);
-//		usrRepo.deleteByUsuario(user);
-//		if(!usr.isPresent())
-//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe el usuario"));
-//		List<Tarjeta> tarjetas = usr.get().getTarjetas();
-//		tarjetas.add(tarj);
-//		usr.get().setTarjetas(tarjetas);
-//		System.out.println(usr.get());
-//		usrRepo.save(usr.get());		
-//		return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Tarjeta Añadida"));
-//	}
+	@PostMapping("/v1/tarjeta/user/{user}")
+	public ResponseEntity<Mensaje> addTarjeta(@PathVariable("user") String user, @RequestBody Tarjeta tarj){
+		System.out.println("El usuario es : "+user);
+		Optional<UsuarioTestLogin> usr = usrRepo.findByUsuario(user);
+		//usrRepo.deleteByUsuario(user);
+		if(!usr.isPresent())
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe el usuario"));
+		List<Tarjeta> tarjetas = usr.get().getTarjetas();
+		tarjetas.add(tarj);
+		usr.get().setTarjetas(tarjetas);
+		System.out.println(usr.get());
+		usrRepo.save(usr.get());		
+		return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Tarjeta Añadida"));
+	}
 	
 	
 }
