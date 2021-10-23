@@ -10,5 +10,7 @@ import com.example.demo.entity.UsuarioTestLogin;
 public interface IUsuarioTestLoginRepo extends JpaRepository<UsuarioTestLogin,Long> {
 	
 	public Optional<UsuarioTestLogin> findByUsuarioAndPassword(String usuario,String password); 
-
+	public Optional<UsuarioTestLogin> findByUsuario(String usuario);
+	public void deleteByUsuario(String usuario);
+	
 }
