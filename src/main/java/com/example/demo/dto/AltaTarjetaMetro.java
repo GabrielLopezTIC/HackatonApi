@@ -15,6 +15,7 @@ public class AltaTarjetaMetro {
 	
 	private String user;
     private String numeroTarjeta;
+    private String urlImage;
     private String activa;
     private String puntos;
 

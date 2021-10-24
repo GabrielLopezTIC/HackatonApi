@@ -25,7 +25,8 @@ public class Metro {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	private String numeroIdTarjeta;
-	boolean encendido;
-	boolean puntosActivos;
+	private String urlImage;
+	private boolean encendido;
+	private boolean puntosActivos;
 
 }

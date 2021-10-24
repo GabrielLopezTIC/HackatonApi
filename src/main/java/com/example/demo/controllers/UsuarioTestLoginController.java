@@ -77,10 +77,11 @@ public class UsuarioTestLoginController {
 		String numeroTarjeta = altaMetro.getNumeroTarjeta();
 		String activa = altaMetro.getActiva();
 		String puntos = altaMetro.getPuntos();
+		String urlImage = altaMetro.getUrlImage();
 		
 		
 		
-		Metro metro = new Metro(0,String.valueOf(getRandomString(19)),activa.equals("true"),puntos.equals("true"));
+		Metro metro = new Metro(0,String.valueOf(getRandomString(19)),urlImage, activa.equals("true"),puntos.equals("true"));
 
 		// se busca el usuario a modificar
 		Optional<UsuarioTestLogin> usr = usrRepo.findByUsuario(user);
