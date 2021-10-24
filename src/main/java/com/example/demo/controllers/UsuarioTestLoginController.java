@@ -70,11 +70,14 @@ public class UsuarioTestLoginController {
 		return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Tarjeta Añadida"));
 	}
 
-	@PostMapping("/v1/metro/user/{user}/numeroTarjeta/{numeroTarjeta}")
+	@PostMapping("/v1/metro/user/{user}/numeroTarjeta/{numeroTarjeta}/activa/{activa}/puntos/{puntos}")
 	public ResponseEntity<Mensaje> addTarjetaMetro(@PathVariable("user") String user,
-			@PathVariable("numeroTarjeta") String numeroTarjeta) {
+			@PathVariable("numeroTarjeta") String numeroTarjeta,@PathVariable("activa") String activa,
+			@PathVariable("puntos") String puntos) {
 		
-		Metro metro = new Metro(0,String.valueOf(getRandomString(12)),true,true);
+		
+		
+		Metro metro = new Metro(0,String.valueOf(getRandomString(19)),activa.equals("true"),puntos.equals("true"));
 
 		// se busca el usuario a modificar
 		Optional<UsuarioTestLogin> usr = usrRepo.findByUsuario(user);
@@ -166,37 +169,19 @@ public class UsuarioTestLoginController {
 
 	}
 
-	public String getRandomString(int i) {
-
-		// bind the length
-		byte[] bytearray = new byte[256];
-
-		String mystring;
-		StringBuffer thebuffer;
-		String theAlphaNumericS;
-
-		new Random().nextBytes(bytearray);
-
-		mystring = new String(bytearray, Charset.forName("UTF-8"));
-
-		thebuffer = new StringBuffer();
-
-		// remove all spacial char
-		theAlphaNumericS = mystring.replaceAll("[^0-9]", "");
-
-		// random selection
-		for (int m = 0; m < theAlphaNumericS.length(); m++) {
-
-			if (Character.isLetter(theAlphaNumericS.charAt(m)) && (i > 0)
-					|| Character.isDigit(theAlphaNumericS.charAt(m)) && (i > 0)) {
-
-				thebuffer.append(theAlphaNumericS.charAt(m));
-				i--;
+	public String getRandomString(int t) {
+		StringBuilder num = new StringBuilder("");
+		int pos = 4;
+		for(int i=0; i < t;i++) {
+			Random claseRandom = new Random(); // Esto crea una instancia de la Clase Random
+			if(i== pos) {
+				num.append("-");
+				pos+=5;
+			}else {
+				num.append(claseRandom.nextInt(9));
 			}
 		}
-
-		// the resulting string
-		return thebuffer.toString();
+		return num.toString();
 	}
 
 }
