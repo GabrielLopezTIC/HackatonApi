@@ -69,43 +69,35 @@ public class UsuarioTestLoginController {
 		return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Tarjeta Añadida"));
 	}
 	
-//	@PostMapping("/v1/metro/user/{user}/{numeroTarjeta}")
-//	public ResponseEntity<Mensaje> addTarjeta(@PathVariable("user") String user,
-//			@PathVariable("numeroTarjeta") String numeroTarjeta, @RequestBody Metro metro){
-//		
-//		
-//		// se busca el usuario a modificar
-//		Optional<UsuarioTestLogin> usr = usrRepo.findByUsuario(user);
-//		
-//		
-//		
-//		//usrRepo.deleteByUsuario(user);
-//		if(!usr.isPresent())
-//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe el usuario"));
-//		
-//		//se obtienen las tarjetas del usuario
-//		List<Tarjeta> tarjetas = usr.get().getTarjetas();
-//		Tarjeta tarjetaFind = null;
-//		
-//		//se busca la tarjeta a sincronizar
-//		for(Tarjeta t: tarjetas) {
-//			if(t.getNumeroTarjeta().equals(numeroTarjeta)) {
-//				tarjetaFind = t;
-//				break;
-//			}
-//		}
-//		//se sincroniza la tarjeta con la nueva tarjeta metro
-//		tarjetaFind.getTarjetasMetro().add(metro);
-//		
-//		//se
-//		usr.get().getTarjetas()
-//		
-//		
-//		usr.get().setTarjetas(tarjetas);
-//		System.out.println(usr.get());
-//		usrRepo.save(usr.get());		
-//		return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Tarjeta Añadida"));
-//	}
+	@PostMapping("/v1/metro/user/{user}/{numeroTarjeta}")
+	public ResponseEntity<Mensaje> addTarjeta(@PathVariable("user") String user,
+			@PathVariable("numeroTarjeta") String numeroTarjeta, @RequestBody Metro metro){
+		// se busca el usuario a modificar
+		Optional<UsuarioTestLogin> usr = usrRepo.findByUsuario(user);
+		//usrRepo.deleteByUsuario(user);
+		if(!usr.isPresent())
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe el usuario"));
+		
+		//se obtienen las tarjetas del usuario
+		List<Tarjeta> tarjetas = usr.get().getTarjetas();
+		Tarjeta tarjetaFind = null;
+		
+		//se busca la tarjeta a sincronizar
+		for(Tarjeta t: tarjetas) {
+			if(t.getNumeroTarjeta().equals(numeroTarjeta)) {
+				tarjetaFind = t;
+				break;
+			}
+		}
+		//se sincroniza la tarjeta con la nueva tarjeta metro
+		tarjetaFind.getTarjetasMetro().add(metro);
+		
+		
+		usr.get().setTarjetas(tarjetas);
+		
+		usrRepo.save(usr.get());		
+		return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Tarjeta Añadida"));
+	}
 	
 	
 	
@@ -127,6 +119,7 @@ public class UsuarioTestLoginController {
 				}
 			}
 		}
+		Tarjeta tarjetaFindOriginal = tarjetaFind;
 		
 		double saldoTarjeta =tarjetaFind.getSaldo() ;
 		double pago = Double.parseDouble(cant);
@@ -140,13 +133,19 @@ public class UsuarioTestLoginController {
 				if((pagoEnPuntos + saldoTarjeta) < pago  ) {
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Mensaje("Puntos y Saldo insuficiente"));
 				}else {
+					
 					usr.get().setPuntos(0);
+					
 					tarjetaFind.setSaldo((saldoTarjeta + puntosEnPesos ) - (pago));
+					usr.get().getTarjetas().remove(tarjetaFindOriginal);
 					usr.get().getTarjetas().add(tarjetaFind);
+					System.out.println("3"+usr.get());
 					usrRepo.save(usr.get());
+					
 					return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Pago correcto"));
 				}
 			}else { // si te alcanzan los puntos
+				
 				usr.get().setPuntos((long)(usr.get().getPuntos() - pagoEnPuntos));
 				usrRepo.save(usr.get());
 				return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Pago correcto"));
@@ -157,6 +156,7 @@ public class UsuarioTestLoginController {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Mensaje("Saldo insuficiente"));
 			}else {
 				tarjetaFind.setSaldo(saldoTarjeta - pago);
+				usr.get().getTarjetas().remove(tarjetaFindOriginal);
 				usr.get().getTarjetas().add(tarjetaFind);
 				usrRepo.save(usr.get());
 				return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Pago correcto"));

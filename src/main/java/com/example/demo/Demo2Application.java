@@ -26,12 +26,12 @@ public class Demo2Application implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-			List<Metro> metros1 = new ArrayList<>();
-			metros1.add(new Metro(1,"123456789",true,true));
-			List<Tarjeta> tarjetas1 = new ArrayList<>();
-			tarjetas1.add(new Tarjeta(1,"Premium",100, "1111-2222-3333-4567","4567" ,"22/10/21", "Visa",metros1));
-			repo.save(new UsuarioTestLogin(1,"Usuario","Usuario","3333",1000,tarjetas1));
-	
+//			List<Metro> metros1 = new ArrayList<>();
+//			metros1.add(new Metro(1,"123456789",true,true));
+//			List<Tarjeta> tarjetas1 = new ArrayList<>();
+//			tarjetas1.add(new Tarjeta(1,"Premium",100, "1111-2222-3333-4567","4567" ,"22/10/21", "Visa",metros1));
+//			repo.save(new UsuarioTestLogin(1,"Usuario","Usuario","3333",1000,tarjetas1));
+//	
 		}
 	
 
