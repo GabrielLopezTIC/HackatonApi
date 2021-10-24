@@ -1,7 +1,9 @@
 package com.example.demo.controllers;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,92 +29,91 @@ public class UsuarioTestLoginController {
 
 	@Autowired
 	private IUsuarioTestLoginRepo usrRepo;
-	
-	
+
 	@PostMapping("/v1/login")
-	public ResponseEntity<Mensaje> login(@RequestBody UsuarioTestLogin usr){
-		Optional<UsuarioTestLogin> usuario = usrRepo.findByUsuarioAndPassword(usr.getUsuario(),usr.getPassword());
-		
-		if(usuario.isPresent()) {
+	public ResponseEntity<Mensaje> login(@RequestBody UsuarioTestLogin usr) {
+		Optional<UsuarioTestLogin> usuario = usrRepo.findByUsuarioAndPassword(usr.getUsuario(), usr.getPassword());
+
+		if (usuario.isPresent()) {
 			return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Usuario Autenticado"));
-		}else {
+		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Mensaje("Usuario o contraseña incorrectos"));
 		}
 	}
-	
+
 	@GetMapping("/v1/usuario/{usr}")
-	public ResponseEntity<?> getUsuario(@PathVariable("usr") String usr){
+	public ResponseEntity<?> getUsuario(@PathVariable("usr") String usr) {
 		Optional<UsuarioTestLogin> usuario = usrRepo.findByUsuario(usr);
-		if(!usuario.isPresent())
+		if (!usuario.isPresent())
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe el usuario"));
 		return ResponseEntity.status(HttpStatus.OK).body(usuario.get());
 	}
-	
+
 	@GetMapping("/v1/all")
-	public ResponseEntity<Iterable<UsuarioTestLogin>> getAll(){
-		//usrRepo.
+	public ResponseEntity<Iterable<UsuarioTestLogin>> getAll() {
+		// usrRepo.
 		return ResponseEntity.status(HttpStatus.OK).body(usrRepo.findAll());
 	}
-	
+
 	@PostMapping("/v1/tarjeta/user/{user}")
-	public ResponseEntity<Mensaje> addTarjeta(@PathVariable("user") String user, @RequestBody Tarjeta tarj){
-		System.out.println("El usuario es : "+user);
+	public ResponseEntity<Mensaje> addTarjeta(@PathVariable("user") String user, @RequestBody Tarjeta tarj) {
+		System.out.println("El usuario es : " + user);
 		Optional<UsuarioTestLogin> usr = usrRepo.findByUsuario(user);
-		//usrRepo.deleteByUsuario(user);
-		if(!usr.isPresent())
+		// usrRepo.deleteByUsuario(user);
+		if (!usr.isPresent())
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe el usuario"));
 		List<Tarjeta> tarjetas = usr.get().getTarjetas();
 		tarjetas.add(tarj);
 		usr.get().setTarjetas(tarjetas);
 		System.out.println(usr.get());
-		usrRepo.save(usr.get());		
+		usrRepo.save(usr.get());
 		return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Tarjeta Añadida"));
 	}
-	
-	@PostMapping("/v1/metro/user/{user}/{numeroTarjeta}")
-	public ResponseEntity<Mensaje> addTarjeta(@PathVariable("user") String user,
-			@PathVariable("numeroTarjeta") String numeroTarjeta, @RequestBody Metro metro){
+
+	@PostMapping("/v1/metro/user/{user}/numeroTarjeta/{numeroTarjeta}")
+	public ResponseEntity<Mensaje> addTarjetaMetro(@PathVariable("user") String user,
+			@PathVariable("numeroTarjeta") String numeroTarjeta) {
+		
+		Metro metro = new Metro(0,String.valueOf(getRandomString(12)),true,true);
+
 		// se busca el usuario a modificar
 		Optional<UsuarioTestLogin> usr = usrRepo.findByUsuario(user);
-		//usrRepo.deleteByUsuario(user);
-		if(!usr.isPresent())
+		// usrRepo.deleteByUsuario(user);
+		if (!usr.isPresent())
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe el usuario"));
-		
-		//se obtienen las tarjetas del usuario
+
+		// se obtienen las tarjetas del usuario
 		List<Tarjeta> tarjetas = usr.get().getTarjetas();
 		Tarjeta tarjetaFind = null;
-		
-		//se busca la tarjeta a sincronizar
-		for(Tarjeta t: tarjetas) {
-			if(t.getNumeroTarjeta().equals(numeroTarjeta)) {
+
+		// se busca la tarjeta a sincronizar
+		for (Tarjeta t : tarjetas) {
+			if (t.getNumeroTarjeta().equals(numeroTarjeta)) {
 				tarjetaFind = t;
 				break;
 			}
 		}
-		//se sincroniza la tarjeta con la nueva tarjeta metro
+		// se sincroniza la tarjeta con la nueva tarjeta metro
 		tarjetaFind.getTarjetasMetro().add(metro);
-		
-		
+
 		usr.get().setTarjetas(tarjetas);
-		
-		usrRepo.save(usr.get());		
+
+		usrRepo.save(usr.get());
 		return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Tarjeta Añadida"));
 	}
-	
-	
-	
+
 	@PostMapping("/pago/usuario/{usuario}/idTarjeta/{idTarjeta}/cant/{cant}")
 	public ResponseEntity<?> simulaPago(@PathVariable("usuario") String usuario,
-			@PathVariable("idTarjeta") String idTarjeta,@PathVariable("cant") String cant) {
-		
+			@PathVariable("idTarjeta") String idTarjeta, @PathVariable("cant") String cant) {
+
 		Optional<UsuarioTestLogin> usr = usrRepo.findByUsuario(usuario);
 		List<Tarjeta> tarjetasBanco = usr.get().getTarjetas();
 		Tarjeta tarjetaFind = null;
 		Metro metroFind = null;
-		for(Tarjeta t :tarjetasBanco){
+		for (Tarjeta t : tarjetasBanco) {
 			List<Metro> metros = t.getTarjetasMetro();
-			for(Metro m : metros) {
-				if(m.getNumeroIdTarjeta().equals(idTarjeta)) {
+			for (Metro m : metros) {
+				if (m.getNumeroIdTarjeta().equals(idTarjeta)) {
 					tarjetaFind = t;
 					metroFind = m;
 					break;
@@ -120,41 +121,41 @@ public class UsuarioTestLoginController {
 			}
 		}
 		Tarjeta tarjetaFindOriginal = tarjetaFind;
-		
-		double saldoTarjeta =tarjetaFind.getSaldo() ;
+
+		double saldoTarjeta = tarjetaFind.getSaldo();
 		double pago = Double.parseDouble(cant);
 		double puntos = usr.get().getPuntos();
 		double puntosEnPesos = puntos * 0.7;
 		double pagoEnPuntos = pago * 14;
-	
-	
-		if(metroFind.isPuntosActivos()) {
-			if(pagoEnPuntos > puntos) { // no te alcanzan los puntos
-				if((pagoEnPuntos + saldoTarjeta) < pago  ) {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Mensaje("Puntos y Saldo insuficiente"));
-				}else {
-					
+
+		if (metroFind.isPuntosActivos()) {
+			if (pagoEnPuntos > puntos) { // no te alcanzan los puntos
+				if ((pagoEnPuntos + saldoTarjeta) < pago) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+							.body(new Mensaje("Puntos y Saldo insuficiente"));
+				} else {
+
 					usr.get().setPuntos(0);
-					
-					tarjetaFind.setSaldo((saldoTarjeta + puntosEnPesos ) - (pago));
+
+					tarjetaFind.setSaldo((saldoTarjeta + puntosEnPesos) - (pago));
 					usr.get().getTarjetas().remove(tarjetaFindOriginal);
 					usr.get().getTarjetas().add(tarjetaFind);
-					System.out.println("3"+usr.get());
+					System.out.println("3" + usr.get());
 					usrRepo.save(usr.get());
-					
+
 					return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Pago correcto"));
 				}
-			}else { // si te alcanzan los puntos
-				
-				usr.get().setPuntos((long)(usr.get().getPuntos() - pagoEnPuntos));
+			} else { // si te alcanzan los puntos
+
+				usr.get().setPuntos((long) (usr.get().getPuntos() - pagoEnPuntos));
 				usrRepo.save(usr.get());
 				return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Pago correcto"));
 			}
-			
-		}else {
-			if(saldoTarjeta - pago < 0){
+
+		} else {
+			if (saldoTarjeta - pago < 0) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Mensaje("Saldo insuficiente"));
-			}else {
+			} else {
 				tarjetaFind.setSaldo(saldoTarjeta - pago);
 				usr.get().getTarjetas().remove(tarjetaFindOriginal);
 				usr.get().getTarjetas().add(tarjetaFind);
@@ -162,17 +163,40 @@ public class UsuarioTestLoginController {
 				return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Pago correcto"));
 			}
 		}
-	
-		
-		
-		
-		
-		
+
 	}
 
-	
-	
-	
-	
-	
+	public String getRandomString(int i) {
+
+		// bind the length
+		byte[] bytearray = new byte[256];
+
+		String mystring;
+		StringBuffer thebuffer;
+		String theAlphaNumericS;
+
+		new Random().nextBytes(bytearray);
+
+		mystring = new String(bytearray, Charset.forName("UTF-8"));
+
+		thebuffer = new StringBuffer();
+
+		// remove all spacial char
+		theAlphaNumericS = mystring.replaceAll("[^0-9]", "");
+
+		// random selection
+		for (int m = 0; m < theAlphaNumericS.length(); m++) {
+
+			if (Character.isLetter(theAlphaNumericS.charAt(m)) && (i > 0)
+					|| Character.isDigit(theAlphaNumericS.charAt(m)) && (i > 0)) {
+
+				thebuffer.append(theAlphaNumericS.charAt(m));
+				i--;
+			}
+		}
+
+		// the resulting string
+		return thebuffer.toString();
+	}
+
 }
