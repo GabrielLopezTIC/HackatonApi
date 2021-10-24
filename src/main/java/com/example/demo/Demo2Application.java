@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.example.demo.entity.Metro;
 import com.example.demo.entity.Tarjeta;
 import com.example.demo.entity.UsuarioTestLogin;
 import com.example.demo.repository.IUsuarioTestLoginRepo;
@@ -24,18 +25,14 @@ public class Demo2Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		
-		if(repo.count() == 0) {
-			List<Tarjeta> tarjetas = new ArrayList<>();
-			tarjetas.add(new Tarjeta(1,"Premium",100, "1111-2222-3333-4567","4567" ,"22/10/21", "Visa"));
-			tarjetas.add(new Tarjeta(1,"Basica",100,"1111-2222-3333-8967","4567","22/10/21", "MasterCard"));
-			tarjetas.add(new Tarjeta(1,"Platinum",100,"1111-2222-3333-2341","4567","22/10/21", "Visa"));
-			//repo.save(new UsuarioTestLogin(1,"Rodrigo","qwert","2222",tarjetas)); 
-			repo.save(new UsuarioTestLogin(1,"Gabriel","Gabriel","3333",tarjetas));
-			repo.save(new UsuarioTestLogin(1,"Felipe","Felipe","4444",tarjetas));
-			repo.save(new UsuarioTestLogin(1,"Rodrigo","Rodrigo","5555",tarjetas));
-			repo.save(new UsuarioTestLogin(1,"Jesus","Jesus","6666",tarjetas)); 
+
+			List<Metro> metros1 = new ArrayList<>();
+			metros1.add(new Metro(1,"123456789",true,true));
+			List<Tarjeta> tarjetas1 = new ArrayList<>();
+			tarjetas1.add(new Tarjeta(1,"Premium",100, "1111-2222-3333-4567","4567" ,"22/10/21", "Visa",metros1));
+			repo.save(new UsuarioTestLogin(1,"Usuario","Usuario","3333",1000,tarjetas1));
+	
 		}
-	}
+	
 
 }

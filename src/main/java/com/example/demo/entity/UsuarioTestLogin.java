@@ -30,6 +30,7 @@ public class UsuarioTestLogin {
 	private String usuario;
 	private String password;
 	private String numeroCuenta;
+	private long puntos;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Tarjeta> tarjetas;
