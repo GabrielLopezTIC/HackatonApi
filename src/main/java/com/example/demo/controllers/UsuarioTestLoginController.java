@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.AltaTarjetaMetro;
 import com.example.demo.dto.Mensaje;
 import com.example.demo.entity.Metro;
 import com.example.demo.entity.Tarjeta;
@@ -70,10 +71,12 @@ public class UsuarioTestLoginController {
 		return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Tarjeta Añadida"));
 	}
 
-	@PostMapping("/v1/metro/user/{user}/numeroTarjeta/{numeroTarjeta}/activa/{activa}/puntos/{puntos}")
-	public ResponseEntity<Mensaje> addTarjetaMetro(@PathVariable("user") String user,
-			@PathVariable("numeroTarjeta") String numeroTarjeta,@PathVariable("activa") String activa,
-			@PathVariable("puntos") String puntos) {
+	@PostMapping("/v1/sincroniza/tarjetametro")
+	public ResponseEntity<Mensaje> addTarjetaMetro(@RequestBody AltaTarjetaMetro altaMetro) {
+		String user = altaMetro.getUser();
+		String numeroTarjeta = altaMetro.getNumeroTarjeta();
+		String activa = altaMetro.getActiva();
+		String puntos = altaMetro.getPuntos();
 		
 		
 		
@@ -123,17 +126,25 @@ public class UsuarioTestLoginController {
 				}
 			}
 		}
+		
+		
 		Tarjeta tarjetaFindOriginal = tarjetaFind;
+		System.out.println("tarjeta find "+tarjetaFind);
+		System.out.println("tarjeta metro "+metroFind);
+		
 
 		double saldoTarjeta = tarjetaFind.getSaldo();
 		double pago = Double.parseDouble(cant);
 		double puntos = usr.get().getPuntos();
-		double puntosEnPesos = puntos * 0.7;
+		double puntosEnPesos = puntos * 0.07;
 		double pagoEnPuntos = pago * 14;
 
+		System.out.println("Puntos activos? "+metroFind.isPuntosActivos());
 		if (metroFind.isPuntosActivos()) {
 			if (pagoEnPuntos > puntos) { // no te alcanzan los puntos
-				if ((pagoEnPuntos + saldoTarjeta) < pago) {
+				System.out.println("no te alcanzan los puntos");
+				if ((puntosEnPesos + saldoTarjeta) < pago) { // si puntos + saldo te alcanza
+					System.out.println("te alzanza puntos + saldos");
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 							.body(new Mensaje("Puntos y Saldo insuficiente"));
 				} else {
@@ -149,14 +160,23 @@ public class UsuarioTestLoginController {
 					return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Pago correcto"));
 				}
 			} else { // si te alcanzan los puntos
+				System.out.println("si te alcanzan los puntos");
+				if((saldoTarjeta - pago) < 0) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Mensaje("Saldo insuficiente"));
+				}else {
+					usr.get().setPuntos((long) (usr.get().getPuntos() - pagoEnPuntos));
+					usrRepo.save(usr.get());
+					return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Pago correcto"));
+				}
 
-				usr.get().setPuntos((long) (usr.get().getPuntos() - pagoEnPuntos));
-				usrRepo.save(usr.get());
-				return ResponseEntity.status(HttpStatus.OK).body(new Mensaje("Pago correcto"));
+				
 			}
 
 		} else {
-			if (saldoTarjeta - pago < 0) {
+			System.out.println("saldo tarjeta"+ saldoTarjeta);
+			System.out.println("pago"+ pago);
+			if ((saldoTarjeta - pago) < 0) {
+				
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Mensaje("Saldo insuficiente"));
 			} else {
 				tarjetaFind.setSaldo(saldoTarjeta - pago);
